@@ -9,7 +9,6 @@ import TransactionsPage from "./pages/TransactionsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import BudgetsPage from "./pages/BudgetsPage";
 import GoalsPage from "./pages/GoalsPage";
-import AssistantPage from "./pages/AssistantPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -22,11 +21,6 @@ const protectedPages = [
   ["analytics", "Analytics", "Future visual insights into financial behavior."],
   ["budgets", "Budgets", "Plan spending limits in a future project phase."],
   ["goals", "Savings Goals", "Set and follow future savings milestones."],
-  [
-    "assistant",
-    "AI Finance Assistant",
-    "Ask money questions when the assistant is introduced.",
-  ],
   [
     "notifications",
     "Notifications",
@@ -57,7 +51,6 @@ export default function App() {
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/budgets" element={<BudgetsPage />} />
         <Route path="/goals" element={<GoalsPage />} />
-        <Route path="/assistant" element={<AssistantPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
