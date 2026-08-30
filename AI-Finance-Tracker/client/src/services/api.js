@@ -10,11 +10,13 @@ api.interceptors.request.use((config) => {
 });
 api.interceptors.response.use(
   (response) => response,
-  (error) =>
-    Promise.reject(
-      new Error(
-        error.response?.data?.message || "Request failed. Please try again.",
-      ),
-    ),
+  (error) => {
+    error.message =
+      error.response?.data?.message ||
+      error.message ||
+      "Request failed. Please try again.";
+    error.status = error.response?.status;
+    return Promise.reject(error);
+  },
 );
 export default api;

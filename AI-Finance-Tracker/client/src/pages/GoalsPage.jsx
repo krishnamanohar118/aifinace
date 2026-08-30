@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Send, Bot, MessageCircle, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 import api from "../services/api";
 import PageHeader from "../components/PageHeader";
@@ -13,12 +13,6 @@ export default function GoalsPage() {
   const [loading, setLoading] = useState(true);
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
-
-  // Chatbot
-  const [chatOpen, setChatOpen] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [chatLoading, setChatLoading] = useState(false);
 
   // =========================
   // LOAD GOALS
@@ -131,83 +125,6 @@ export default function GoalsPage() {
           "Failed to delete goal.",
       );
     }
-  };
-
-  // =========================
-  // AI ASSISTANT
-  // =========================
-
-  const askAssistant = async (text) => {
-    const questionText = (text || question).trim();
-
-    if (!questionText || chatLoading) {
-      return;
-    }
-
-    // Add user message
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "user",
-        content: questionText,
-      },
-    ]);
-
-    setQuestion("");
-    setChatLoading(true);
-
-    try {
-      /*
-       * Sends the user's question and current
-       * savings goals to your backend.
-       *
-       * Backend endpoint:
-       * POST /api/assistant
-       */
-      const response = await api.post("/assistant", {
-        question: questionText,
-        goals: items,
-      });
-
-      const answer =
-        response.data?.answer ||
-        response.data?.message ||
-        response.data?.data?.answer;
-
-      if (!answer) {
-        throw new Error("The AI assistant returned no answer.");
-      }
-
-      // Add AI response
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: answer,
-        },
-      ]);
-    } catch (err) {
-      console.error("Assistant error:", err);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            err?.response?.data?.message ||
-            "Sorry, I could not connect to the AI assistant.",
-          error: true,
-        },
-      ]);
-    } finally {
-      setChatLoading(false);
-    }
-  };
-
-  const handleChatSubmit = (e) => {
-    e.preventDefault();
-
-    askAssistant();
   };
 
   // =========================
@@ -380,165 +297,6 @@ export default function GoalsPage() {
         </Modal>
       )}
 
-      {/* ==================================
-          FLOATING AI CHATBOT
-      ================================== */}
-
-      <div className="finance-chatbot">
-        {/* CHAT WINDOW */}
-
-        {chatOpen && (
-          <div className="chatbot-window">
-            {/* HEADER */}
-
-            <div className="chatbot-header">
-              <div className="chatbot-title">
-                <div className="chatbot-avatar">
-                  <Bot size={20} />
-                </div>
-
-                <div>
-                  <h3>Smart Finance Assistant</h3>
-
-                  <span>Your personal finance helper</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="chatbot-close"
-                onClick={() => setChatOpen(false)}
-                aria-label="Close chatbot"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* CHAT MESSAGES */}
-
-            <div className="chatbot-messages">
-              {/* FIRST MESSAGE */}
-
-              {messages.length === 0 && (
-                <div className="chatbot-welcome">
-                  <div className="welcome-icon">
-                    <Bot size={27} />
-                  </div>
-
-                  <h4>Hi! 👋</h4>
-
-                  <p>
-                    Ask me about your savings, spending, income, or financial
-                    goals.
-                  </p>
-
-                  <div className="quick-questions">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        askAssistant("How much should I save each month?")
-                      }
-                    >
-                      How much should I save each month?
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        askAssistant("Am I on track with my savings goals?")
-                      }
-                    >
-                      Am I on track with my goals?
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        askAssistant("Which savings goal should I focus on?")
-                      }
-                    >
-                      Which goal should I focus on?
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* MESSAGES */}
-
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`chat-message ${
-                    message.role === "user" ? "user-message" : "ai-message"
-                  }`}
-                >
-                  {message.role === "assistant" && (
-                    <div className="message-avatar">
-                      <Bot size={14} />
-                    </div>
-                  )}
-
-                  <div
-                    className={`message-bubble ${
-                      message.error ? "chat-error" : ""
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                </div>
-              ))}
-
-              {/* AI TYPING */}
-
-              {chatLoading && (
-                <div className="chat-message ai-message">
-                  <div className="message-avatar">
-                    <Bot size={14} />
-                  </div>
-
-                  <div className="message-bubble typing">
-                    <span />
-                    <span />
-                    <span />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* INPUT */}
-
-            <form className="chatbot-input" onSubmit={handleChatSubmit}>
-              <input
-                type="text"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Ask about your finances..."
-                disabled={chatLoading}
-                autoComplete="off"
-              />
-
-              <button
-                type="submit"
-                disabled={chatLoading || !question.trim()}
-                aria-label="Send message"
-              >
-                <Send size={17} />
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* FLOATING BUTTON */}
-
-        <button
-          type="button"
-          className="chatbot-button"
-          onClick={() => setChatOpen((prev) => !prev)}
-          aria-label="Open finance assistant"
-        >
-          {chatOpen ? <X size={24} /> : <MessageCircle size={25} />}
-        </button>
-      </div>
     </>
   );
 }

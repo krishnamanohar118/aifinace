@@ -1,7 +1,6 @@
 import {
   BarChart3,
   Bell,
-  Bot,
   ChartNoAxesCombined,
   ChevronLeft,
   CircleDollarSign,
@@ -18,13 +17,13 @@ import { useState } from "react";
 import Brand from "../components/Brand";
 import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../hooks/useAuth";
+import FinanceChatbot from "../components/FinanceChatbot";
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/transactions", label: "Transactions", icon: ReceiptText },
   { to: "/analytics", label: "Analytics", icon: ChartNoAxesCombined },
   { to: "/budgets", label: "Budgets", icon: CircleDollarSign },
   { to: "/goals", label: "Savings Goals", icon: PiggyBank },
-  { to: "/assistant", label: "AI Assistant", icon: Bot },
   { to: "/notifications", label: "Notifications", icon: Bell },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings },
@@ -33,6 +32,7 @@ export default function AppLayout() {
   const [open, setOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
+
   return (
     <div className="app-shell">
       <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
@@ -93,6 +93,7 @@ export default function AppLayout() {
         <div className="content">
           <Outlet />
         </div>
+        <FinanceChatbot />
       </main>
     </div>
   );
